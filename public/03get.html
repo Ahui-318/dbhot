@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>get参数传递</title>
+  </head>
+  <body>
+    <p><input type="text" id="username" /></p>
+    <p><input type="text" id= "age"/></p>
+    <p><input type="button" id="btn" value="提交" /></p>
+    <script>
+      var btn = document.querySelector("#btn");
+      var username = document.querySelector('#username');
+      var age = document.querySelector('#age');
+      btn.onclick = function () {
+        var nameValue = username.value;
+        var ageValue = age.value;
+        var xhr = new XMLHttpRequest();
+
+
+        var params = 'username='+nameValue+'&age='+ageValue;
+        //告诉Ajax请求地址以及请求方式
+        //以什么方式发送请求，发送到哪
+        xhr.open("get", "http://localhost:3300/get?"+params);
+        //发送请求
+        xhr.send();
+        //获取服务器端给与客户端的响应数据
+        xhr.onload = function () {
+          console.log(xhr.responseText);
+        };
+      };
+    </script>
+  </body>
+</html>

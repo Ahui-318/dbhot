@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      function ajax(options) {
+        // 存储的是默认值
+        var defaults = {
+          type: "get",
+          url: "",
+          date: {},
+          header: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          success: function () {},
+          error: function () {},
+        };
+
+        // 使用options对象中的属性覆盖defaults对象中的属性，，结果影响原来的值
+        Object.assign(defaults, options);
+
+        //创建ajax对象
+        var xhr = new XMLHttpRequest();
+        // 拼接请求参数的变量
+        var params = "";
+        for (var attr in defaults.data) {
+          //name=zhangsan&age=23
+          params += attr + "=" + defaults.data[attr] + "&";          
+        }
+        // 截取字符串的最后一个连接符
+        params = params.substr(0, params.length - 1);
+
+        //判断请求方式
+        if (defaults.type == "get") {
+          defaults.url = defaults.url + "?" + params;
+        }
+
+        // 配置ajax对象
+        xhr.open(defaults.type, defaults.url);
+        // 请求方式post
+        if (defaults.type == "post") {
+          // 用户希望的向服务器端传递的请求参数的类型
+          var contentType = defaults.header["Content-Type"];
+          // post请求必须设置请求参数的格式
+          xhr.setRequestHeader("Content-Type", contentType);
+
+          if (contentType == "application/json") {
+            xhr.send(JSON.stringify(defaults.data));
+          } else {
+            xhr.send(params);
+          }
+        } else {
+          // 发送请求
+          xhr.send();
+        }
+
+        // 接收服务器的响应结果  `onload`事件或者`onreadystatechange`
+        //当xhr对象接收完响应后触发
+        xhr.onload = function () {
+          // xhr.getResponnseHeader()  获取响应头中的数据
+          var contentType = xhr.getResponseHeader("Content-Type");
+          // 获取服务器端返回的数据
+          var responseText = xhr.responseText;
+          // string.includes(params)判断字符串是否含有参数字符串，有返回true 没有返回false
+          if (contentType.includes("application/json")) {
+            // 将json字符串转换未json对象
+            responseText = JSON.parse(responseText);
+          }
+          if (xhr.status == 200) {
+            defaults.success(responseText);
+          } else {
+            defaults.error(responseText, xhr);
+          }
+        };
+      }
+
+      // 函数的调用
+      ajax({
+        type:'post',
+        // 请求地址
+        url: "http://localhost:3300/responseData",
+
+        success: function (date) {
+          // console.log("这里是success函数" + date);
+          console.log(date);
+        },
+      });
+    </script>
+  </body>
+</html>
